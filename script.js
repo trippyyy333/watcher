@@ -1,5 +1,7 @@
 const API_KEY = "014ee686e7ce64cf0b540756cbc51640";
-const BASE_URL = "https://api.themoviedb.org/3/search";
+const SEARCH_URL = "https://api.themoviedb.org/3/search";
+const TRENDING_URL = "https://api.themoviedb.org/3/trending";
+const MOVIE_URL = "https://api.themoviedb.org/3/movie";
 
 document.getElementById("searchForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -8,7 +10,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
   const includeAdult = document.getElementById("includeAdult").checked;
   const type = document.querySelector('input[name="type"]:checked').value;
 
-  const url = `${BASE_URL}/${type}?query=${encodeURIComponent(query)}&include_adult=${includeAdult}&language=en-US&page=1&api_key=${API_KEY}`;
+  const url = `${SEARCH_URL}/${type}?query=${encodeURIComponent(query)}&include_adult=${includeAdult}&language=en-US&page=1&api_key=${API_KEY}`;
 
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = "<p>Loading...</p>";
@@ -26,21 +28,17 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
         const tmdbId = item.id;
         const title = item.name || item.title;
         const overview = item.overview || "No description available.";
-        const typeQuery = type === "movie" ? "tt" : "tv";
-        const detailsPage = `details.html?id=${tmdbId}&type=${type}`;
+        const mediaType = item.media_type || type;
+        const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
         const imageUrl = item.poster_path 
-        ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
-        : "https://via.placeholder.com/500x300?text=No+Image";
+          ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
+          : "https://via.placeholder.com/500x300?text=No+Image";
 
         card.innerHTML = `
-          <img src="${imageUrl}" alt="${item.name || item.title}">
-
-          <span>${tmdbId}</span>
-          <h2>${title}</h2>
+          <img src="${imageUrl}" alt="${title}">
           <div class="card-content">
-            <h2>${item.name || item.title}</h2>
-            <p>${item.overview || "No description available."}</p>
-
+            <h2>${title}</h2>
+            <span>ID: ${tmdbId}</span>
             <p>${overview}</p>
           </div>
         `;
@@ -59,39 +57,72 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
   }
 });
 
-function updateUrl(season, episode) {
-  const url = new URL(window.location);
-  url.searchParams.set('s', season);
-  url.searchParams.set('e', episode);
-  window.history.pushState({}, '', url);
-}
-
-document.querySelectorAll('.episode-button').forEach(button => {
-  button.addEventListener('click', function() {
-    const seasonNumber = this.dataset.season;
-    const episodeNumber = this.dataset.episode;
-    updateUrl(seasonNumber, episodeNumber);
-    updateIframeSource(seasonNumber, episodeNumber);
-  });
-});
-
-// Function to get URL parameters
-function getUrlParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Extract season and episode from URL
-const season = getUrlParameter('s');
-const episode = getUrlParameter('e');
-
-// Update iframe source based on URL parameters
-function updateIframeSource(season, episode) {
-  const iframe = document.getElementById("player-iframe");
-  if (season && episode) {
-    iframe.src = `https://vidsrc.xyz/embed/tv?imdb=${currentImdbId}&season=${season}&episode=${episode}&ds_lang=en`;
+async function fetchLatestMovies() {
+  const url = `${MOVIE_URL}/latest?language=en-US&api_key=${API_KEY}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    displayResults([data], "Latest Movies");
+  } catch (error) {
+    console.error("Error fetching latest movies:", error);
   }
 }
 
-// Call the function to update the iframe source
-updateIframeSource(season, episode);
+async function fetchTrendingContent() {
+  const url = `${TRENDING_URL}/all/day?language=en-US&api_key=${API_KEY}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    displayResults(data.results, "Trending Movies & TV Shows");
+  } catch (error) {
+    console.error("Error fetching trending content:", error);
+  }
+}
+
+function displayResults(results, title) {
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML += `<h2>${title}</h2>`;
+
+  results.sort((a, b) => {
+    if (a.poster_path && !b.poster_path) return -1;
+    if (!a.poster_path && b.poster_path) return 1;
+    return 0;
+  });
+
+  if (results && results.length > 0) {
+    results.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const tmdbId = item.id;
+      const title = item.name || item.title;
+      const overview = item.overview || "No description available.";
+      const mediaType = item.media_type || 'movie';
+      const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+      const imageUrl = item.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
+        : "https://via.placeholder.com/500x300?text=No+Image";
+
+      card.innerHTML = `
+        <img src="${imageUrl}" alt="${title}">
+        <div class="card-content">
+          <h2>${title}</h2>
+          <span>ID: ${tmdbId}</span>
+          <p>${overview}</p>
+        </div>
+      `;
+      card.addEventListener("click", () => {
+        window.location.href = detailsPage;
+      });
+
+      resultsContainer.appendChild(card);
+    });
+  } else {
+    resultsContainer.innerHTML += "<p>No results found.</p>";
+  }
+}
+
+// Call these functions when the page loads
+window.addEventListener('load', () => {
+  fetchLatestMovies();
+  fetchTrendingContent();
+});
