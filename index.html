@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie/TV Search</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Search for Movies or TV Shows</h1>
+    <form id="searchForm">
+      <input type="text" id="query" placeholder="Search..." required>
+      <label>
+        <input type="checkbox" id="includeAdult"> Include Adult
+      </label>
+      <label>
+        <input type="radio" name="type" value="movie" checked> Movie
+      </label>
+      <label>
+        <input type="radio" name="type" value="tv"> TV Show
+      </label>
+      <button type="submit">Search</button>
+    </form>
+    <div class="results" id="results"></div>
+  </div>
+  <script src="/script.js"></script>
+</body>
+</html>
