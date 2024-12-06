@@ -9,6 +9,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
   const query = document.getElementById("query").value.trim();
   const includeAdult = document.getElementById("includeAdult").checked;
   const type = document.querySelector('input[name="type"]:checked').value;
+  const use2embed = document.getElementById("use2embed").checked;
 
   const url = `${SEARCH_URL}/${type}?query=${encodeURIComponent(query)}&include_adult=${includeAdult}&language=en-US&page=1&api_key=${API_KEY}`;
 
@@ -29,7 +30,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
         const title = item.name || item.title;
         const overview = item.overview || "No description available.";
         const mediaType = item.media_type || type;
-        const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+        const detailsPage = use2embed ? `details_2embed.html?id=${tmdbId}&type=${mediaType}` : `details.html?id=${tmdbId}&type=${mediaType}`;
         const imageUrl = item.poster_path 
           ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
           : "https://via.placeholder.com/500x300?text=No+Image";
@@ -97,7 +98,7 @@ function displayResults(results, title) {
       const title = item.name || item.title;
       const overview = item.overview || "No description available.";
       const mediaType = item.media_type || 'movie';
-      const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+      const detailsPage = use2embed ? `details_2embed.html?id=${tmdbId}&type=${mediaType}` : `details.html?id=${tmdbId}&type=${mediaType}`;
       const imageUrl = item.poster_path 
         ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
         : "https://via.placeholder.com/500x300?text=No+Image";
