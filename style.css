@@ -146,3 +146,30 @@ label {
 .next-episode-button:hover {
   background-color: #ae00c5de;
 }
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.radio-group label {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.radio-group label:hover {
+  background-color: rgba(174, 0, 197, 0.1);
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 5px;
+}

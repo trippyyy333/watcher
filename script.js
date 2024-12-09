@@ -7,10 +7,11 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const query = document.getElementById("query").value.trim();
-  const includeAdult = document.getElementById("includeAdult").checked;
   const type = document.querySelector('input[name="type"]:checked').value;
+  const netflix = document.getElementById("netflix").checked;
+  const use2embed = document.getElementById("use2embed").checked;
 
-  const url = `${SEARCH_URL}/${type}?query=${encodeURIComponent(query)}&include_adult=${includeAdult}&language=en-US&page=1&api_key=${API_KEY}`;
+  const url = `${SEARCH_URL}/${type}?query=${encodeURIComponent(query)}&language=en-US&page=1&api_key=${API_KEY}`;
 
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = "<p>Loading...</p>";
@@ -29,7 +30,19 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
         const title = item.name || item.title;
         const overview = item.overview || "No description available.";
         const mediaType = item.media_type || type;
-        const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+        
+        // Determine which details page to use
+        let detailsPage;
+        if (netflix) {
+          detailsPage = `details2.html?id=${tmdbId}&type=${mediaType}`;
+        } else if (use2embed && netflix) {
+          detailsPage = `details2.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
+        // } else if (use2embed) {
+        //   detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
+        } else {
+          detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+        }
+
         const imageUrl = item.poster_path 
           ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
           : "https://via.placeholder.com/500x300?text=No+Image";
@@ -42,6 +55,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
             <p>${overview}</p>
           </div>
         `;
+        
         card.addEventListener("click", () => {
           window.location.href = detailsPage;
         });
@@ -97,7 +111,23 @@ function displayResults(results, title) {
       const title = item.name || item.title;
       const overview = item.overview || "No description available.";
       const mediaType = item.media_type || 'movie';
-      const detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+      
+      // Determine which details page to use based on player selection
+      const player = document.querySelector('input[name="player"]:checked').value;
+      let detailsPage;
+      
+      switch(player) {
+        case 'netflix':
+          detailsPage = `details2.html?id=${tmdbId}&type=${mediaType}`;
+          break;
+        case '2embed':
+          detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
+          break;
+        case 'adult':
+          detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+          break;
+      }
+
       const imageUrl = item.poster_path 
         ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
         : "https://via.placeholder.com/500x300?text=No+Image";
@@ -110,6 +140,7 @@ function displayResults(results, title) {
           <p>${overview}</p>
         </div>
       `;
+      
       card.addEventListener("click", () => {
         window.location.href = detailsPage;
       });
@@ -125,4 +156,17 @@ function displayResults(results, title) {
 window.addEventListener('load', () => {
   fetchLatestMovies();
   fetchTrendingContent();
+});
+
+// Add checkbox mutual exclusivity logic
+document.getElementById("netflix").addEventListener("change", function() {
+  if (this.checked) {
+    document.getElementById("use2embed").checked = false;
+  }
+});
+
+document.getElementById("use2embed").addEventListener("change", function() {
+  if (this.checked) {
+    document.getElementById("netflix").checked = false;
+  }
 });
