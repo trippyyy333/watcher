@@ -118,7 +118,7 @@ function displayResults(results, title) {
       
       switch(player) {
         case 'netflix':
-          detailsPage = `details2.html?id=${tmdbId}&type=${mediaType}`;
+          detailsPage = `details_2.html?id=${tmdbId}&type=${mediaType}`;
           break;
         case '2embed':
           detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
