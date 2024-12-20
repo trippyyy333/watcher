@@ -40,7 +40,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
         // } else if (use2embed) {
         //   detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
         } else {
-          detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
+          detailsPage = `details1.html?id=${tmdbId}&type=${mediaType}`;
         }
 
         const imageUrl = item.poster_path 
@@ -87,15 +87,33 @@ async function fetchTrendingContent() {
   try {
     const response = await fetch(url);
     const data = await response.json();
+    
+    if (!data || !data.results) {
+      console.error("Invalid trending data received:", data);
+      return;
+    }
+    
     displayResults(data.results, "Trending Movies & TV Shows");
   } catch (error) {
     console.error("Error fetching trending content:", error);
+    const resultsContainer = document.getElementById("results");
+    resultsContainer.innerHTML = "<p>Error loading trending content</p>";
   }
 }
 
 function displayResults(results, title) {
   const resultsContainer = document.getElementById("results");
+  
+  if (title === "Trending Movies & TV Shows") {
+    resultsContainer.innerHTML = "";
+  }
+  
   resultsContainer.innerHTML += `<h2>${title}</h2>`;
+
+  if (!results || results.length === 0) {
+    resultsContainer.innerHTML += "<p>No results found.</p>";
+    return;
+  }
 
   results.sort((a, b) => {
     if (a.poster_path && !b.poster_path) return -1;
@@ -112,20 +130,17 @@ function displayResults(results, title) {
       const overview = item.overview || "No description available.";
       const mediaType = item.media_type || 'movie';
       
-      // Determine which details page to use based on player selection
-      const player = document.querySelector('input[name="player"]:checked').value;
+      // Replace the player radio selection with checkbox logic
+      const netflix = document.getElementById("netflix").checked;
+      const use2embed = document.getElementById("use2embed").checked;
       let detailsPage;
       
-      switch(player) {
-        case 'netflix':
-          detailsPage = `details_2.html?id=${tmdbId}&type=${mediaType}`;
-          break;
-        case '2embed':
-          detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
-          break;
-        case 'adult':
-          detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
-          break;
+      if (netflix) {
+        detailsPage = `details2.html?id=${tmdbId}&type=${mediaType}`;
+      } else if (use2embed) {
+        detailsPage = `details_2embed.html?id=${tmdbId}&type=${mediaType}&season=1&e=1`;
+      } else {
+        detailsPage = `details.html?id=${tmdbId}&type=${mediaType}`;
       }
 
       const imageUrl = item.poster_path 
@@ -154,7 +169,6 @@ function displayResults(results, title) {
 
 // Call these functions when the page loads
 window.addEventListener('load', () => {
-  fetchLatestMovies();
   fetchTrendingContent();
 });
 
