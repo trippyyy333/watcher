@@ -755,10 +755,11 @@
           
           // Update video source and enable interaction
           if (type === 'movie') {
-            iframe.src = `https://vidsrc.xyz/embed/movie/${currentImdbId}&ds_lang=en`;
+            iframe.src = `https://vidsrc.xyz/embed/movie?imdb${currentImdbId}&ds_lang=en`;
             iframe.style.pointerEvents = 'auto';
           } else {
-            iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${seasonNumber}-${episodeNumber}&ds_lang=en`;
+            iframe.src = `https://vidsrc.xyz/tv?imdb${currentImdbId}&season=${seasonNumber}&episode=${episodeNumber}&ds_lang=en`;
+
           }
         });
 
@@ -785,7 +786,8 @@
             window.history.pushState({ season, episode }, '', newUrl);
 
             // Update iframe source
-            iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${season}-${episode}&ds_lang=en`;
+            iframe.src = `https://vidsrc.xyz/embed/tv?imdb=${currentImdbId}&season=${season}&episode=${episode}&ds_lang=en`;
+
             // iframe.src = `https://vidbinge.dev/embed/tv/${currentImdbId}/${season}/${episode}`;
 
             // Update active episode in UI
@@ -945,7 +947,8 @@
             window.history.pushState({}, '', newUrl);
 
             // Update iframe source
-            iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${season}-${episode}&ds_lang=en`;
+            iframe.src = `https://vidsrc.xyz/embed/tv?imdb=${currentImdbId}&season=${season}&episode=${episode}&ds_lang=en`;
+
                 // iframe.src = `https://vidbinge.dev/embed/tv/${currentImdbId}/${season.season_number}/${episode.episode_number}`;
 
             // Update active episode in UI
@@ -1003,7 +1006,8 @@
                 newUrl.searchParams.set('e', episode.episode_number);
                 window.history.pushState({}, '', newUrl);
                 // Update iframe source
-                iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${season.season_number}-${episode.episode_number}&ds_lang=en`;
+                iframe.src = `https://vidsrc.xyz/embed/tv?imdb=${currentImdbId}&season=${season.season_number}}&episode=${episode.episode_number}&ds_lang=en`;
+                
                 // iframe.src = `https://vidbinge.dev/embed/tv/${currentImdbId}/${season.season_number}/${episode.episode_number}`;
               };
 
@@ -1022,7 +1026,8 @@
           }
 
           // Set initial iframe source for TV shows
-          iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${seasonNumber}-${episodeNumber}&ds_lang=en`;
+          iframe.src = `https://vidsrc.xyz/embed/tv?imdb=${currentImdbId}&season=${seasonNumber}&episode=${episodeNumber}&ds_lang=en`;
+          // iframe.src = `https://vidsrc.xyz/embed/tv/${currentImdbId}/${seasonNumber}-${episodeNumber}`;
           // iframe.src = `https://vidbinge.dev/embed/tv/${currentImdbId}/${seasonNumber}/${episodeNumber}`;
         
 
