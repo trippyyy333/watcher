@@ -735,8 +735,10 @@
 
         if (type === 'movie') {
           // For movies: Show thumbnail initially
-          iframe.src = `https://image.tmdb.org/t/p/original${showData.backdrop_path}`;
-          iframe.style.pointerEvents = 'none'; // Prevent interaction with thumbnail
+          // iframe.src = `https://image.tmdb.org/t/p/original${showData.backdrop_path}`;
+          // iframe.style.pointerEvents = 'none'; // Prevent interaction with thumbnail
+          iframe.src = `https://vidsrc.xyz/embed/movie?imdb=${currentImdbId}&ds_lang=en`;
+
           
           // Hide episodes container and navigation buttons for movies
           episodesContainer.style.display = 'none';
@@ -756,7 +758,7 @@
           // Update video source and enable interaction
           if (type === 'movie') {
             iframe.src = `https://vidsrc.xyz/embed/movie?imdb=${currentImdbId}&ds_lang=en`;
-            iframe.style.pointerEvents = 'auto';
+            // iframe.style.pointerEvents = 'auto';
           } else {
             iframe.src = `https://vidsrc.xyz/tv?imdb${currentImdbId}&season=${seasonNumber}&episode=${episodeNumber}&ds_lang=en`;
 
